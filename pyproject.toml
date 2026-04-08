@@ -15,8 +15,12 @@ dependencies = [
   "pydantic",
   "fastapi",
   "uvicorn",
-  "openai"
+  "openai",
+  "openenv-core>=0.2.0"
 ]
 
+[project.scripts]
+server = "server.app:app"
+
 [tool.setuptools]
-packages = ["env", "tasks", "graders", "reward"]
+packages = ["env", "tasks", "graders", "reward", "server"]
