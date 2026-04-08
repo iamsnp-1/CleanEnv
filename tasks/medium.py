@@ -21,6 +21,7 @@ def get_medium_task(seed=42):
     corrupted_df.loc[0:50, "category"] = corrupted_df.loc[0:50, "category"].astype(str).str.upper()
 
     # mess up is_active
+    corrupted_df["is_active"] = corrupted_df["is_active"].astype(object)
     corrupted_df.loc[50:100, "is_active"] = None
     
     # Step 4: validation rules

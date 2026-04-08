@@ -26,6 +26,7 @@ def get_hard_task(seed=42):
     corrupted_df.loc[50:100, "age"] = -10
 
     # Inconsistent booleans
+    corrupted_df["is_active"] = corrupted_df["is_active"].astype(object)
     corrupted_df.loc[100:150, "is_active"] = "unknown"
 
     # Step 4: Validation rules
