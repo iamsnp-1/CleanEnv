@@ -1,3 +1,9 @@
+"""
+Smart agent for DataCleanEnv-X.
+Multi-turn conversation agent with system prompt and JSON response mode.
+Uses the same env vars as inference.py: API_BASE_URL, MODEL_NAME, HF_TOKEN.
+"""
+
 import os
 import json
 import time
@@ -6,11 +12,11 @@ import openai
 from env.core import DataCleanEnv
 from env.models import ActionModel, ActionType
 
-client = OpenAI(
-    base_url=os.environ.get("API_BASE_URL", "https://generativelanguage.googleapis.com/v1beta/openai/"),
-    api_key=os.environ.get("GEMINI_API_KEY", os.environ.get("OPENAI_API_KEY", ""))
-)
-MODEL = os.environ.get("MODEL_NAME", "gemini-2.5-flash")
+API_BASE_URL = os.environ.get("API_BASE_URL", "https://generativelanguage.googleapis.com/v1beta/openai/")
+MODEL_NAME = os.environ.get("MODEL_NAME", "gemini-2.5-flash")
+API_KEY = os.environ.get("HF_TOKEN", os.environ.get("OPENAI_API_KEY", ""))
+
+client = OpenAI(base_url=API_BASE_URL, api_key=API_KEY)
 
 
 def create_system_prompt():
@@ -50,14 +56,12 @@ def extract_action(content):
 
     try:
         parsed = json.loads(content)
-        action_dict = parsed.get("action", {})
-        action = ActionModel(**action_dict)
-        return action
-    except:
+        action_dict = parsed.get("action", parsed)
+        return ActionModel(**action_dict)
+    except Exception:
         return ActionModel(
             type=ActionType.FINISH,
-            column="id",
-            parameters={}
+            parameters={},
         )
 
 
@@ -71,13 +75,12 @@ def run_task(task_name):
 
     messages = [
         {"role": "system", "content": create_system_prompt()},
-        {"role": "user", "content": json.dumps(obs.model_dump(mode="json"))}
+        {"role": "user", "content": json.dumps(obs.model_dump(mode="json"))},
     ]
 
     done = False
     step = 0
     max_steps = 15
-
     info = {}
 
     while not done and step < max_steps:
@@ -86,10 +89,9 @@ def run_task(task_name):
         for attempt in range(3):
             try:
                 response = client.chat.completions.create(
-                    model=MODEL,
+                    model=MODEL_NAME,
                     messages=messages,
                     temperature=0.0,
-                    response_format={"type": "json_object"}
                 )
                 break
             except openai.RateLimitError:
@@ -102,7 +104,6 @@ def run_task(task_name):
         messages.append({"role": "assistant", "content": content})
 
         action = extract_action(content)
-
         obs, reward, done, info = env.step(action)
 
         print("[STEP]")
@@ -115,7 +116,7 @@ def run_task(task_name):
         if not done:
             messages.append({
                 "role": "user",
-                "content": json.dumps(obs.model_dump(mode="json"))
+                "content": json.dumps(obs.model_dump(mode="json")),
             })
 
     final_score = info.get("final_score", 0.0) if isinstance(info, dict) else 0.0
@@ -123,6 +124,9 @@ def run_task(task_name):
     print("[END]")
     print(f"task={task_name}")
     print(f"score={final_score}")
+    print()
+
+    return final_score
 
 
 if __name__ == "__main__":

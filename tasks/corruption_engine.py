@@ -25,6 +25,8 @@ def introduce_type_errors(df, column):
     Convert some numeric values into strings
     """
     df_copy = df.copy()
+    # Convert to object dtype first to avoid FutureWarning
+    df_copy[column] = df_copy[column].astype(object)
 
     indices = np.random.choice(len(df), int(0.1 * len(df)), replace=False)
 
