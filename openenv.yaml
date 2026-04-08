@@ -1,12 +1,24 @@
 name: datacleanenv-x
+description: >
+  A data cleaning simulation environment where AI agents must fix real-world
+  data quality issues (missing values, type errors, duplicates, outliers,
+  inconsistent formatting) across structured datasets of increasing complexity.
 version: 1.0.0
 
 entry_point: env.core:DataCleanEnv
 
 tasks:
   - name: easy
+    description: Fix missing values and handle type coercion errors in a small dataset.
+    difficulty: easy
+
   - name: medium
+    description: Deduplicate rows, fill missing fields, and normalize inconsistent string formatting.
+    difficulty: medium
+
   - name: hard
+    description: Full pipeline — fix missing values, type errors, duplicates, outliers, and flag invalid rows.
+    difficulty: hard
 
 api:
   reset: /reset
@@ -14,6 +26,6 @@ api:
   state: /state
 
 models:
-  observation: ObservationModel
-  action: ActionModel
-  reward: RewardModel
+  observation: env.models:ObservationModel
+  action: env.models:ActionModel
+  reward: env.models:RewardModel

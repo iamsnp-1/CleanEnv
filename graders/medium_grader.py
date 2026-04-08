@@ -1,15 +1,46 @@
+"""
+Medium grader for DataCleanEnv-X.
+Scores based on: missing fix (30%) + duplicate removal (40%) + format normalization (30%).
+"""
+
 import pandas as pd
-from graders.utils import count_issues
+import numpy as np
+from graders.utils import count_missing_values, count_duplicates, count_format_issues
 
-def grade_medium(original_df, cleaned_df, ground_truth=None):
-    """
-    Returns score between 0 and 1
-    """
-    before = count_issues(original_df)
-    after = count_issues(cleaned_df)
 
-    score = (before - after) / max(before, 1)
+def grade_medium(original_df: pd.DataFrame, cleaned_df: pd.DataFrame, ground_truth: dict = None) -> float:
+    """
+    Grade the medium task.
+
+    Criteria:
+    - 30% weight: missing value reduction
+    - 40% weight: duplicate removal
+    - 30% weight: format normalization (inconsistent casing/whitespace)
+
+    Returns:
+        Score between 0.0 and 1.0.
+    """
+    # Missing values
+    orig_missing = count_missing_values(original_df)
+    clean_missing = count_missing_values(cleaned_df)
+    missing_score = (orig_missing - clean_missing) / max(orig_missing, 1)
+    missing_score = max(0.0, min(1.0, missing_score))
+
+    # Duplicates
+    orig_dup = count_duplicates(original_df)
+    clean_dup = count_duplicates(cleaned_df)
+    dup_score = (orig_dup - clean_dup) / max(orig_dup, 1)
+    dup_score = max(0.0, min(1.0, dup_score))
+
+    # Format issues
+    orig_fmt = count_format_issues(original_df)
+    clean_fmt = count_format_issues(cleaned_df)
+    fmt_score = (orig_fmt - clean_fmt) / max(orig_fmt, 1)
+    fmt_score = max(0.0, min(1.0, fmt_score))
+
+    score = 0.3 * missing_score + 0.4 * dup_score + 0.3 * fmt_score
     return round(float(max(0.0, min(1.0, score))), 4)
+
 
 if __name__ == "__main__":
     from tasks.medium import get_medium_task
