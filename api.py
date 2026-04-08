@@ -12,8 +12,7 @@ def root():
         "endpoints": ["/reset", "/step", "/state"]
     }
 
-@app.get("/reset")
-@app.post("/reset")
+@app.api_route("/reset", methods=["GET", "POST"])
 def reset():
     obs = env.reset()
     return obs.model_dump()
