@@ -1,0 +1,7 @@
+pandas
+numpy
+pydantic
+openai
+fastapi
+uvicorn
+huggingface_hub

@@ -1,0 +1,30 @@
+name: datacleanenv-x
+version: 1.0.0
+description: Data cleaning and validation environment for structured datasets
+
+entry_point: env.core:DataCleanEnv
+
+tasks:
+  - name: easy
+    description: Fix missing values and type issues
+  - name: medium
+    description: Deduplicate and normalize fields
+  - name: hard
+    description: Full pipeline with outliers and validation
+
+api:
+  reset: /reset
+  step: /step
+  state: /state
+
+models:
+  observation: ObservationModel
+  action: ActionModel
+  reward: RewardModel
+
+requirements:
+  python: ">=3.10"
+
+metadata:
+  author: DCX Team
+  tags: [data-cleaning, openenv, ml]
