@@ -164,7 +164,7 @@ def run_task(task_name: str) -> float:
     final_score = strict_score(info.get("final_score", 0.5))
     
     # Final safety assertion for validator peace of mind
-    assert 0.0 < final_score < 1.0
+    assert 0 < final_score < 1
 
     print("[END]")
     print(f"task={task_name}")
