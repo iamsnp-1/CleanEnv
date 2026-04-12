@@ -99,7 +99,7 @@ def run_task(task_name: str) -> float:
     except Exception as exc:
         print("[ERROR] env.reset() failed:", exc)
         print(traceback.format_exc())
-        return 0.0
+        return 0.01
 
     messages = [{"role": "system", "content": SYSTEM_PROMPT}]
     done = False
@@ -134,7 +134,7 @@ def run_task(task_name: str) -> float:
         except Exception as exc:
             print("[ERROR] env.step() failed:", exc)
             print(traceback.format_exc())
-            info = {"final_score": 0.0}
+            info = {"final_score": 0.01}
             break
 
         print("[STEP]")
@@ -151,7 +151,7 @@ def run_task(task_name: str) -> float:
         except Exception as exc:
             print("[ERROR] final finish action failed:", exc)
             print(traceback.format_exc())
-            info = {"final_score": 0.0}
+            info = {"final_score": 0.01}
 
         print("[STEP]")
         print(f"step={step_num + 1}")
@@ -160,7 +160,7 @@ def run_task(task_name: str) -> float:
         print(f"reward={getattr(reward, 'value', None)}")
         print()
 
-    final_score = info.get("final_score", 0.0)
+    final_score = info.get("final_score", 0.01)
 
     print("[END]")
     print(f"task={task_name}")

@@ -119,7 +119,7 @@ def run_task(task_name):
                 "content": json.dumps(obs.model_dump(mode="json")),
             })
 
-    final_score = info.get("final_score", 0.0) if isinstance(info, dict) else 0.0
+    final_score = info.get("final_score", 0.01) if isinstance(info, dict) else 0.01
 
     print("[END]")
     print(f"task={task_name}")

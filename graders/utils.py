@@ -15,15 +15,18 @@ def strict_score(score):
     except (TypeError, ValueError):
         return 0.5
 
-    if score <= 0:
-        return 0.0001
-    if score >= 1:
-        return 0.9999
+    if pd.isna(score):
+        return 0.5
 
-    if score > 0.9999:
-        return 0.9999
-    if score < 0.0001:
-        return 0.0001
+    if score <= 0:
+        return 0.01
+    if score >= 1:
+        return 0.99
+
+    if score > 0.99:
+        return 0.99
+    if score < 0.01:
+        return 0.01
 
     return score
 
