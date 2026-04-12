@@ -161,7 +161,8 @@ def run_task(task_name: str) -> float:
         print(f"reward={getattr(reward, 'value', None)}")
         print()
 
-    final_score = strict_score(info.get("final_score", 0.5))
+    final_score = info.get("final_score", 0.01)
+    final_score = max(0.01, min(0.99, float(final_score)))
     
     # Final safety assertion for validator peace of mind
     assert 0 < final_score < 1
