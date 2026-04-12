@@ -8,6 +8,16 @@ import pandas as pd
 import numpy as np
 
 
+def normalize_score(score: float) -> float:
+    if score is None or not isinstance(score, (int, float)):
+        return 0.5
+    if score <= 0:
+        return 0.0001
+    elif score >= 1:
+        return 0.9999
+    return float(score)
+
+
 def count_missing_values(df: pd.DataFrame) -> int:
     """Count total missing (NaN/None) values across all columns."""
     return int(df.isna().sum().sum())

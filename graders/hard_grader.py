@@ -11,6 +11,7 @@ from graders.utils import (
     count_duplicates,
     count_outliers,
     count_format_issues,
+    normalize_score,
 )
 
 
@@ -32,35 +33,37 @@ def grade_hard(original_df: pd.DataFrame, cleaned_df: pd.DataFrame, ground_truth
     orig_missing = count_missing_values(original_df)
     clean_missing = count_missing_values(cleaned_df)
     missing_score = (orig_missing - clean_missing) / max(orig_missing, 1)
-    missing_score = max(0.0, min(1.0, missing_score))
+    missing_score = normalize_score(missing_score)
 
     # Type errors
     orig_type = count_type_errors(original_df)
     clean_type = count_type_errors(cleaned_df)
     type_score = (orig_type - clean_type) / max(orig_type, 1)
-    type_score = max(0.0, min(1.0, type_score))
+    type_score = normalize_score(type_score)
 
     # Duplicates
     orig_dup = count_duplicates(original_df)
     clean_dup = count_duplicates(cleaned_df)
     dup_score = (orig_dup - clean_dup) / max(orig_dup, 1)
-    dup_score = max(0.0, min(1.0, dup_score))
+    dup_score = normalize_score(dup_score)
 
     # Outliers
     orig_out = count_outliers(original_df)
     clean_out = count_outliers(cleaned_df)
     outlier_score = (orig_out - clean_out) / max(orig_out, 1)
-    outlier_score = max(0.0, min(1.0, outlier_score))
+    outlier_score = normalize_score(outlier_score)
 
     # Format / invalid values
     orig_fmt = count_format_issues(original_df)
     clean_fmt = count_format_issues(cleaned_df)
     fmt_score = (orig_fmt - clean_fmt) / max(orig_fmt, 1)
-    fmt_score = max(0.0, min(1.0, fmt_score))
+    fmt_score = normalize_score(fmt_score)
 
     score = 0.2 * missing_score + 0.2 * type_score + 0.2 * dup_score + 0.2 * outlier_score + 0.2 * fmt_score
-    # enforce strict bounds
-    score = max(0.0001, min(0.9999, score))
+    score = normalize_score(score)
+
+    assert 0.0 < score < 1.0
+
     return score
 
 

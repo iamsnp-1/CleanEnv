@@ -5,7 +5,7 @@ Scores based on: missing value reduction (50%) + type error fix (50%).
 
 import pandas as pd
 import numpy as np
-from graders.utils import count_missing_values, count_type_errors
+from graders.utils import count_missing_values, count_type_errors, normalize_score
 
 
 def grade_easy(original_df: pd.DataFrame, cleaned_df: pd.DataFrame, ground_truth: dict = None) -> float:
@@ -23,17 +23,19 @@ def grade_easy(original_df: pd.DataFrame, cleaned_df: pd.DataFrame, ground_truth
     orig_missing = count_missing_values(original_df)
     clean_missing = count_missing_values(cleaned_df)
     missing_score = (orig_missing - clean_missing) / max(orig_missing, 1)
-    missing_score = max(0.0, min(1.0, missing_score))
+    missing_score = normalize_score(missing_score)
 
     # Type errors (non-numeric in age/income)
     orig_type_err = count_type_errors(original_df)
     clean_type_err = count_type_errors(cleaned_df)
     type_score = (orig_type_err - clean_type_err) / max(orig_type_err, 1)
-    type_score = max(0.0, min(1.0, type_score))
+    type_score = normalize_score(type_score)
 
     score = 0.5 * missing_score + 0.5 * type_score
-    # enforce strict bounds
-    score = max(0.0001, min(0.9999, score))
+    score = normalize_score(score)
+
+    assert 0.0 < score < 1.0
+
     return score
 
 
