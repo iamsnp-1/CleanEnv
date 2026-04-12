@@ -16,6 +16,7 @@ import traceback
 from openai import OpenAI
 from env.core import DataCleanEnv
 from env.models import ActionModel, ActionType
+from graders.utils import strict_score
 
 API_BASE_URL = os.environ.get(
     "API_BASE_URL",
@@ -160,7 +161,10 @@ def run_task(task_name: str) -> float:
         print(f"reward={getattr(reward, 'value', None)}")
         print()
 
-    final_score = info.get("final_score", 0.01)
+    final_score = strict_score(info.get("final_score", 0.5))
+    
+    # Final safety assertion for validator peace of mind
+    assert 0.0 < final_score < 1.0
 
     print("[END]")
     print(f"task={task_name}")

@@ -251,7 +251,7 @@ class DataCleanEnv:
             }
             grader = grader_map[self.task]
             final_score = grader(self.initial_dataset, final_df, self.task_data.get("ground_truth"))
-            info["final_score"] = float(max(0.01, min(0.99, final_score)))
+            info["final_score"] = strict_score(final_score)
 
         return obs, reward, done, info
 
