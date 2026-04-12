@@ -202,12 +202,13 @@ class DataCleanEnv:
         # Compute reward
         reward_value = compute_reward(prev_issues, new_issues, action.type.value)
 
-        # Normalize reward from [-1, 1] to [0, 1]
-        normalized_reward = (reward_value + 1) / 2
-        normalized_reward = min(max(normalized_reward, 0.0), 1.0)
+        # Normalize reward to [0, 1] then map to (0.01, 0.99)
+        normalized = (reward_value + 1) / 2
+        final_reward = 0.01 + 0.98 * normalized
+        final_reward = min(max(final_reward, 0.01), 0.99)
 
         reward = RewardModel(
-            value=float(normalized_reward),
+            value=float(final_reward),
             components={
                 "issue_reduction": float(prev_issues - new_issues),
                 "prev_issues": float(prev_issues),
