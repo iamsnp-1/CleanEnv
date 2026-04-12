@@ -2,6 +2,10 @@ FROM python:3.10-slim
 
 WORKDIR /app
 
+# Ensure logs are streamed in real-time and no .pyc files are generated
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
 # Install dependencies first (Docker layer cache)
 COPY requirements.txt .
 RUN pip install --no-cache-dir --upgrade pip && \
