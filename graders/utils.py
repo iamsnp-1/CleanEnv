@@ -16,14 +16,14 @@ def strict_score(score):
         return 0.5
 
     if score <= 0:
-        return 0.0001
+        return 0
     if score >= 1:
-        return 0.9999
+        return 1
 
-    if score > 0.9999:
-        return 0.9999
-    if score < 0.0001:
-        return 0.0001
+    if score > 1:
+        return 1
+    if score < 0:
+        return 0
 
     return score
 
