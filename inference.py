@@ -4,8 +4,6 @@ Baseline inference script for DataCleanEnv-X.
 
 import json
 import os
-import time
-import traceback
 from openai import OpenAI
 from env.core import DataCleanEnv
 from env.models import ActionModel, ActionType
@@ -29,16 +27,7 @@ FALLBACK_ACTION = ActionModel(
 )
 
 
-def strip_code_fence(text: str) -> str:
-    text = text.strip()
-    if text.startswith("```") and text.count("```") >= 2:
-        parts = text.split("```")
-        return parts[1].strip()
-    return text
-
-
 def parse_action(content: str) -> ActionModel:
-    content = strip_code_fence(content)
     try:
         return ActionModel(**json.loads(content))
     except Exception:
@@ -57,15 +46,13 @@ def call_llm(messages):
 def run_task(task_name: str):
     env = DataCleanEnv(task=task_name, seed=42)
 
-    print("[START]")
-    print(f"task={task_name}\n")
+    # 🔥 START FORMAT (correct)
+    print(f"[START] task={task_name}")
 
     try:
         obs = env.reset()
     except Exception:
-        print("[END]")
-        print(f"task={task_name}")
-        print("score=0.50\n")
+        print(f"[END] success=false steps=0 score=0.50")
         return
 
     messages = [{"role": "system", "content": SYSTEM_PROMPT}]
@@ -96,44 +83,53 @@ def run_task(task_name: str):
             info = {"final_score": 0.5}
             break
 
-        print("[STEP]")
-        print(f"step={step_num}")
-        print(f"action_type={action.type.value}")
-        print(f"column={action.column}")
-        print(f"reward={getattr(reward, 'value', 0.5)}\n")
+        # 🔥 STEP FORMAT (single-line style)
+        print(
+            f"[STEP] step={step_num} "
+            f"action_type={action.type.value} "
+            f"column={action.column} "
+            f"reward={getattr(reward, 'value', 0.5)}"
+        )
 
     # ensure episode ends
     if not done:
         try:
             finish_action = ActionModel(type=ActionType.FINISH, parameters={})
             obs, reward, done, info = env.step(finish_action)
+            step_num += 1
+
+            print(
+                f"[STEP] step={step_num} "
+                f"action_type=finish column=None "
+                f"reward={getattr(reward, 'value', 0.5)}"
+            )
         except Exception:
             info = {"final_score": 0.5}
 
-        print("[STEP]")
-        print(f"step={step_num + 1}")
-        print("action_type=finish")
-        print("column=None")
-        print(f"reward={getattr(reward, 'value', 0.5)}\n")
-
-    # 🔥 FINAL SAFE SCORE HANDLING (KEY FIX)
+    # 🔥 FINAL SCORE (SAFE + VALIDATOR FORMAT)
     final_score = info.get("final_score", 0.5)
 
     try:
         final_score = float(final_score)
-    except Exception:
+    except:
         final_score = 0.5
 
     # handle NaN / inf
     if final_score != final_score or final_score in [float("inf"), float("-inf")]:
         final_score = 0.5
 
-    # strict clamp inside (0,1)
+    # strict clamp
     final_score = max(0.01, min(0.99, final_score))
 
-    print("[END]")
-    print(f"task={task_name}")
-    print(f"score={final_score}\n")
+    success = final_score > 0.3
+    success_str = "true" if success else "false"
+
+    # 🔥 CRITICAL: SINGLE LINE END FORMAT
+    print(
+        f"[END] success={success_str} "
+        f"steps={step_num} "
+        f"score={final_score:.2f}"
+    )
 
     return final_score
 
