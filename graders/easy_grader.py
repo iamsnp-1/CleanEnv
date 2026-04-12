@@ -17,7 +17,7 @@ def grade_easy(original_df: pd.DataFrame, cleaned_df: pd.DataFrame, ground_truth
     - 50% weight: type error reduction (non-numeric values in numeric columns)
 
     Returns:
-        Score between 0.0 and 1.0.
+        Score between 0 and 1.
     """
     # Missing values
     orig_missing = count_missing_values(original_df)
@@ -34,7 +34,7 @@ def grade_easy(original_df: pd.DataFrame, cleaned_df: pd.DataFrame, ground_truth
     score = 0.5 * missing_score + 0.5 * type_score
     score = strict_score(score)
 
-    assert 0.0 < score < 1.0
+    assert 0 < score < 1
 
     return score
 

@@ -27,7 +27,7 @@ def grade_hard(original_df: pd.DataFrame, cleaned_df: pd.DataFrame, ground_truth
     - 20%: format / invalid value fix
 
     Returns:
-        Score between 0.0 and 1.0.
+        Score between 0 and 1.
     """
     # Missing values
     orig_missing = count_missing_values(original_df)
@@ -62,7 +62,7 @@ def grade_hard(original_df: pd.DataFrame, cleaned_df: pd.DataFrame, ground_truth
     score = 0.2 * missing_score + 0.2 * type_score + 0.2 * dup_score + 0.2 * outlier_score + 0.2 * fmt_score
     score = strict_score(score)
 
-    assert 0.0 < score < 1.0
+    assert 0 < score < 1
 
     return score
 
