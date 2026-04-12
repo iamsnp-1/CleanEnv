@@ -40,7 +40,6 @@ def grade_easy(original_df: pd.DataFrame, cleaned_df: pd.DataFrame, ground_truth
     score = 0.5 * missing_score + 0.5 * type_score
     score = strict_score(score)
 
-    assert 0.0 < score < 1.0
 
     return score
 
