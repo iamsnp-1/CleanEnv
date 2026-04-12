@@ -202,14 +202,19 @@ class DataCleanEnv:
         # Compute reward
         reward_value = compute_reward(prev_issues, new_issues, action.type.value)
 
+        # Normalize reward from [-1, 1] to [0, 1]
+        normalized_reward = (reward_value + 1) / 2
+        normalized_reward = min(max(normalized_reward, 0.0), 1.0)
+
         reward = RewardModel(
-            value=reward_value,
+            value=float(normalized_reward),
             components={
                 "issue_reduction": float(prev_issues - new_issues),
                 "prev_issues": float(prev_issues),
                 "new_issues": float(new_issues),
+                "raw_reward": float(reward_value)
             },
-            reason=f"{'improvement' if reward_value > 0 else 'no improvement' if reward_value == 0 else 'regression'}",
+            reason=f"Issues reduced from {prev_issues} to {new_issues} (raw: {reward_value:.4f})",
         )
 
         state.setdefault("history", []).append({
