@@ -77,7 +77,7 @@ def state():
     return env.state()
 
 
-def start():
+def main():
     """Entry point for [project.scripts] — launches the FastAPI server."""
     import uvicorn
     uvicorn.run("api:app", host="0.0.0.0", port=7860)
