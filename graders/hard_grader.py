@@ -59,7 +59,9 @@ def grade_hard(original_df: pd.DataFrame, cleaned_df: pd.DataFrame, ground_truth
     fmt_score = max(0.0, min(1.0, fmt_score))
 
     score = 0.2 * missing_score + 0.2 * type_score + 0.2 * dup_score + 0.2 * outlier_score + 0.2 * fmt_score
-    return round(float(max(0.0, min(1.0, score))), 4)
+    # enforce strict bounds
+    score = max(0.0001, min(0.9999, score))
+    return score
 
 
 if __name__ == "__main__":

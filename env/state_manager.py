@@ -111,7 +111,7 @@ class StateManager:
                 })
 
         # 2. Duplicate rows
-        subset_cols = ["id"] if "id" in df.columns else None
+        subset_cols = ["id"] if "id" in df.columns else df.columns.tolist()
         duplicate_count = df.duplicated(subset=subset_cols).sum()
         if duplicate_count > 0:
             issues.append({
