@@ -32,31 +32,46 @@ def grade_hard(original_df: pd.DataFrame, cleaned_df: pd.DataFrame, ground_truth
     # Missing values
     orig_missing = count_missing_values(original_df)
     clean_missing = count_missing_values(cleaned_df)
-    missing_score = (orig_missing - clean_missing) / max(orig_missing, 1)
+    if orig_missing == 0:
+        missing_score = 0.5
+    else:
+        missing_score = (orig_missing - clean_missing) / orig_missing
     missing_score = strict_score(missing_score)
 
     # Type errors
     orig_type = count_type_errors(original_df)
     clean_type = count_type_errors(cleaned_df)
-    type_score = (orig_type - clean_type) / max(orig_type, 1)
+    if orig_type == 0:
+        type_score = 0.5
+    else:
+        type_score = (orig_type - clean_type) / orig_type
     type_score = strict_score(type_score)
 
     # Duplicates
     orig_dup = count_duplicates(original_df)
     clean_dup = count_duplicates(cleaned_df)
-    dup_score = (orig_dup - clean_dup) / max(orig_dup, 1)
+    if orig_dup == 0:
+        dup_score = 0.5
+    else:
+        dup_score = (orig_dup - clean_dup) / orig_dup
     dup_score = strict_score(dup_score)
 
     # Outliers
     orig_out = count_outliers(original_df)
     clean_out = count_outliers(cleaned_df)
-    outlier_score = (orig_out - clean_out) / max(orig_out, 1)
+    if orig_out == 0:
+        outlier_score = 0.5
+    else:
+        outlier_score = (orig_out - clean_out) / orig_out
     outlier_score = strict_score(outlier_score)
 
     # Format / invalid values
     orig_fmt = count_format_issues(original_df)
     clean_fmt = count_format_issues(cleaned_df)
-    fmt_score = (orig_fmt - clean_fmt) / max(orig_fmt, 1)
+    if orig_fmt == 0:
+        fmt_score = 0.5
+    else:
+        fmt_score = (orig_fmt - clean_fmt) / orig_fmt
     fmt_score = strict_score(fmt_score)
 
     score = 0.2 * missing_score + 0.2 * type_score + 0.2 * dup_score + 0.2 * outlier_score + 0.2 * fmt_score
@@ -64,12 +79,18 @@ def grade_hard(original_df: pd.DataFrame, cleaned_df: pd.DataFrame, ground_truth
     # convert to float explicitly
     score = float(score)
 
-    # clamp BEFORE strict_score to avoid rounding to 1.0
+    # first normalization
+    score = strict_score(score)
+
+    # final absolute clamp
+    if score >= 1.0:
+        score = 0.9999
+    elif score <= 0.0:
+        score = 0.0001
+
+    # enforce bounds
     score = min(score, 0.9999)
     score = max(score, 0.0001)
-
-    # final normalization
-    score = strict_score(score)
 
     assert 0.0 < score < 1.0
 
