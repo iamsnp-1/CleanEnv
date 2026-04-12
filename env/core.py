@@ -15,6 +15,7 @@ from graders.easy_grader import grade_easy
 from graders.medium_grader import grade_medium
 from graders.hard_grader import grade_hard
 from reward.reward_engine import compute_reward
+from graders.utils import strict_score
 
 
 class DataCleanEnv:
@@ -157,7 +158,7 @@ class DataCleanEnv:
         # Guard against stepping after done
         if self._done:
             obs = self._build_observation()
-            reward = RewardModel(value=0.0, components={}, reason="episode already done")
+            reward = RewardModel(value=0.5, components={}, reason="episode already done")
             return obs, reward, True, {"error": "episode already finished"}
 
         state = self.state_manager.state
@@ -250,8 +251,19 @@ class DataCleanEnv:
                 "hard": grade_hard,
             }
             grader = grader_map[self.task]
-            final_score = grader(self.initial_dataset, final_df, self.task_data.get("ground_truth"))
-            info["final_score"] = strict_score(final_score)
+            final_score = grader(
+                self.initial_dataset,
+                final_df,
+                self.task_data.get("ground_truth")
+            )
+
+            # enforce strict scoring
+            safe_score = strict_score(final_score)
+
+            # final hard clamp (validator-safe)
+            safe_score = min(max(safe_score, 0.01), 0.99)
+
+            info["final_score"] = float(safe_score)
 
         return obs, reward, done, info
 

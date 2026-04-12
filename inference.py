@@ -161,14 +161,15 @@ def run_task(task_name: str) -> float:
         print(f"reward={getattr(reward, 'value', None)}")
         print()
 
-    final_score = strict_score(info.get("final_score", 0.5))
+    # enforce strict scoring
+    score = strict_score(info.get("final_score", 0.5))
     
     # Final safety assertion for validator peace of mind
-    assert 0.0 < final_score < 1.0
+    assert 0.0 < score < 1.0, f"Invalid score: {score}"
 
     print("[END]")
     print(f"task={task_name}")
-    print(f"score={final_score}")
+    print(f"score={score}")
     print()
 
     return final_score
