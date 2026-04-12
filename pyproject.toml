@@ -16,4 +16,4 @@ dependencies = [
 ]
 
 [project.scripts]
-datacleanenv-x-server = "api:app"
+datacleanenv-x-server = "api:serve"

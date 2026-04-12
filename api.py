@@ -75,3 +75,9 @@ def state():
     if env is None:
         raise HTTPException(status_code=400, detail="Environment not initialized. Call /reset first.")
     return env.state()
+
+
+def serve():
+    """Entry point for [project.scripts] — launches the FastAPI server."""
+    import uvicorn
+    uvicorn.run("api:app", host="0.0.0.0", port=7860)
