@@ -5,7 +5,7 @@ Scores based on: missing fix (30%) + duplicate removal (40%) + format normalizat
 
 import pandas as pd
 import numpy as np
-from graders.utils import count_missing_values, count_duplicates, count_format_issues, normalize_score
+from graders.utils import count_missing_values, count_duplicates, count_format_issues, strict_score
 
 
 def grade_medium(original_df: pd.DataFrame, cleaned_df: pd.DataFrame, ground_truth: dict = None) -> float:
@@ -24,22 +24,22 @@ def grade_medium(original_df: pd.DataFrame, cleaned_df: pd.DataFrame, ground_tru
     orig_missing = count_missing_values(original_df)
     clean_missing = count_missing_values(cleaned_df)
     missing_score = (orig_missing - clean_missing) / max(orig_missing, 1)
-    missing_score = normalize_score(missing_score)
+    missing_score = strict_score(missing_score)
 
     # Duplicates
     orig_dup = count_duplicates(original_df)
     clean_dup = count_duplicates(cleaned_df)
     dup_score = (orig_dup - clean_dup) / max(orig_dup, 1)
-    dup_score = normalize_score(dup_score)
+    dup_score = strict_score(dup_score)
 
     # Format issues
     orig_fmt = count_format_issues(original_df)
     clean_fmt = count_format_issues(cleaned_df)
     fmt_score = (orig_fmt - clean_fmt) / max(orig_fmt, 1)
-    fmt_score = normalize_score(fmt_score)
+    fmt_score = strict_score(fmt_score)
 
     score = 0.3 * missing_score + 0.4 * dup_score + 0.3 * fmt_score
-    score = normalize_score(score)
+    score = strict_score(score)
 
     assert 0.0 < score < 1.0
 

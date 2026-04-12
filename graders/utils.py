@@ -8,14 +8,24 @@ import pandas as pd
 import numpy as np
 
 
-def normalize_score(score: float) -> float:
-    if score is None or not isinstance(score, (int, float)):
+def strict_score(score):
+    """Enforce scores strictly within (0, 1). Zero tolerance for boundary values."""
+    try:
+        score = float(score)
+    except (TypeError, ValueError):
         return 0.5
+
     if score <= 0:
         return 0.0001
-    elif score >= 1:
+    if score >= 1:
         return 0.9999
-    return float(score)
+
+    if score > 0.9999:
+        return 0.9999
+    if score < 0.0001:
+        return 0.0001
+
+    return score
 
 
 def count_missing_values(df: pd.DataFrame) -> int:
