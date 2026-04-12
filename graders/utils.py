@@ -8,7 +8,7 @@ import numpy as np
 
 def strict_score(score):
     """Force score strictly into (0.01, 0.99) — never 0.0 or 1.0.
-    This matches the successful pattern from the IncidentForge project."""
+    This matches the successful pattern ."""
     try:
         score = float(score)
     except (TypeError, ValueError):
