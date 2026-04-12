@@ -60,9 +60,18 @@ def grade_hard(original_df: pd.DataFrame, cleaned_df: pd.DataFrame, ground_truth
     fmt_score = strict_score(fmt_score)
 
     score = 0.2 * missing_score + 0.2 * type_score + 0.2 * dup_score + 0.2 * outlier_score + 0.2 * fmt_score
+
+    # convert to float explicitly
+    score = float(score)
+
+    # clamp BEFORE strict_score to avoid rounding to 1.0
+    score = min(score, 0.9999)
+    score = max(score, 0.0001)
+
+    # final normalization
     score = strict_score(score)
 
-    assert 0 < score < 1
+    assert 0.0 < score < 1.0
 
     return score
 

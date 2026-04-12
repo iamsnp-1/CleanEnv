@@ -32,9 +32,18 @@ def grade_easy(original_df: pd.DataFrame, cleaned_df: pd.DataFrame, ground_truth
     type_score = strict_score(type_score)
 
     score = 0.5 * missing_score + 0.5 * type_score
+
+    # convert to float explicitly
+    score = float(score)
+
+    # clamp BEFORE strict_score to avoid rounding to 1.0
+    score = min(score, 0.9999)
+    score = max(score, 0.0001)
+
+    # final normalization
     score = strict_score(score)
 
-    assert 0 < score < 1
+    assert 0.0 < score < 1.0
 
     return score
 
